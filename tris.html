@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tris 2.0</title>
+    <style>
+      body {
+        background-image: url(Sfondo.jpg);
+        background-repeat: no-repeat;
+        color: #000;
+      }
+
+      .griglia {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        width: 600px;
+        margin: auto;
+        border: 1px solid #fa0;
+      }
+
+      .griglia button {
+        display: flex;
+        width: 200px;
+        height: 200px;
+        box-sizing: border-box;
+        font-size: 100px;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        color: #fff;
+        border-color: #fa0;
+      }
+
+      .griglia button:hover {
+        background-color: #f005;
+      }
+
+      .resetContainer {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+      }
+
+      .reset {
+        width: 100px;
+        height: 50px;
+        font-size: 20px;
+        background-color: #f80;
+      }
+
+      .reset:hover {
+        cursor: pointer;
+        background-color: #b00;
+        color: #fff;
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Tris 2.0</h1>
+    <h2 class="turnoGiocatore">Turno Giocatore 1</h2>
+    <div class="griglia">
+      <button class="casella" value="0" onclick="premi(this)"></button>
+      <button class="casella" value="1" onclick="premi(this)"></button>
+      <button class="casella" value="2" onclick="premi(this)"></button>
+      <button class="casella" value="3" onclick="premi(this)"></button>
+      <button class="casella" value="4" onclick="premi(this)"></button>
+      <button class="casella" value="5" onclick="premi(this)"></button>
+      <button class="casella" value="6" onclick="premi(this)"></button>
+      <button class="casella" value="7" onclick="premi(this)"></button>
+      <button class="casella" value="8" onclick="premi(this)"></button>
+    </div>
+    <div class="resetContainer">
+      <button class="reset" onclick="reset()">RESET</button>
+    </div>
+  </body>
+  <script>
+    let turno = "";
+    let simbolo = "XO";
+    let isPrimoTurno = true;
+    // let riga1 = [];
+    // let riga2 = [];
+    // let riga3 = [];
+    let righe = [];
+    let griglia = document.querySelectorAll(".griglia button");
+    let playerDisplay = document.querySelector(".turnoGiocatore");
+    let playerTurn = true;
+    let turnCounter = 0;
+
+    function premi(htmlElement) {
+      if (isPrimoTurno) {
+        turno = htmlElement.innerHTML = simbolo.charAt(
+          Math.floor(Math.random() * simbolo.length)
+        );
+        isPrimoTurno = false;
+        htmlElement.disabled = true;
+        htmlElement.style.backgroundColor = "#c50";
+      }
+
+      if (turno == "X") {
+        htmlElement.innerHTML = "O";
+        turno = "O";
+        htmlElement.disabled = true;
+        htmlElement.style.backgroundColor = "#c50";
+      } else {
+        htmlElement.innerHTML = "X";
+        turno = "X";
+        htmlElement.disabled = true;
+        htmlElement.style.backgroundColor = "#0a5";
+        htmlElement.style.color = "#000";
+      }
+      if (playerTurn) {
+        playerDisplay.innerHTML = "Turno Giocatore 2";
+        playerTurn = false;
+      } else {
+        playerDisplay.innerHTML = "Turno Giocatore 1";
+        playerTurn = true;
+      }
+      righe[htmlElement.value] = htmlElement.innerHTML;
+      turnCounter++;
+      if (turnCounter > 4) {
+        checkwinner();
+      }
+    }
+
+    function checkwinner() {
+      let riga1 = righe.slice(0, 3).join("");
+      let riga2 = righe.slice(3, 6).join("");
+      let riga3 = righe.slice(6, 9).join("");
+      let colonna1 = [0, 3, 6].map((x) => righe[x]).join("");
+      let colonna2 = [1, 4, 7].map((x) => righe[x]).join("");
+      let colonna3 = [2, 5, 8].map((x) => righe[x]).join("");
+      let diagonale1 = [0, 4, 8].map((x) => righe[x]).join("");
+      let diagonale2 = [2, 4, 6].map((x) => righe[x]).join("");
+      if (
+        riga1 == "XXX" ||
+        riga2 == "XXX" ||
+        riga3 == "XXX" ||
+        colonna1 == "XXX" ||
+        colonna2 == "XXX" ||
+        colonna3 == "XXX" ||
+        diagonale1 == "XXX" ||
+        diagonale2 == "XXX"
+      ) {
+        alert("X vince");
+        for (i = 0; i < griglia.length; i++) {
+          griglia[i].disabled = true;
+        }
+        playerDisplay.innerHTML = "Vince la Croce";
+      }
+
+      if (
+        riga1 == "OOO" ||
+        riga2 == "OOO" ||
+        riga3 == "OOO" ||
+        colonna1 == "OOO" ||
+        colonna2 == "OOO" ||
+        colonna3 == "OOO" ||
+        diagonale1 == "OOO" ||
+        diagonale2 == "OOO"
+      ) {
+        alert("O vince");
+        for (i = 0; i < griglia.length; i++) {
+          griglia[i].disabled = true;
+        }
+        playerDisplay.innerHTML = "Vince il Cerchio";
+      }
+    }
+
+    function reset() {
+      for (i = 0; i < griglia.length; i++) {
+        griglia[i].innerHTML = "";
+        griglia[i].style.backgroundColor = "transparent";
+        griglia[i].disabled = false;
+      }
+      righe = [];
+      playerDisplay.innerHTML = "Turno Giocatore 1";
+      playerTurn = true;
+      turnCounter = 0;
+    }
+  </script>
+</html>
